@@ -85,7 +85,6 @@ To make sure its sorted the same way, I sort it like the snp file
 
 ```
 (head -n 1 transposed_maize_genotypes.txt && tail -n +2 transposed_maize_genotypes.txt | sort -k1,1) > sorted_transposed_maize_genotypes.txt
-
 ``` 
 
 To check if evertyhing workd, I looked at the files with:
@@ -145,6 +144,7 @@ head maize_chr1_decreasing.txt | cut -f 1-10 | column -t
 ```
 
 For the unknown and multiple position, I used this:
+
 ```
 awk '$3 ~ /unknown|Position/' joined_maize_snp_and_genotypes.txt > maize/maize_snp_with_unknown_position.txt
 awk '$3 ~ /multiple|Position/' joined_maize_snp_and_genotypes.txt > maize/maize_snp_with_multiple_position.txt
@@ -161,10 +161,12 @@ head maize_snp_with_unknown_position.txt | cut -f 1-10 | column -t
 
 ###Teosinte Data
 Since the Groups for teosinte (ZMPBA, ZMPIL, ZMPJA) are also in the third column, I sorted for the third column, cut that column and counted how many times the group names appeared in the column, for ZMPBA, ZMPIL and ZMPJA, it was 900, 41 and 34 respectively.
-                                                                                                                               ```
+
+```                                            
 sort -k3 fang_et_al_genotypes.txt | cut -f 3 | uniq -c | column -t
 ```
-                                                                                                                               Now I can extract the desired teosinte groups and skip column 2 and 3, transpose it, sort it and save each step to a new file
+
+Now I can extract the desired teosinte groups and skip column 2 and 3, transpose it, sort it and save each step to a new file
 
 ```
 awk -F "\t" '$3 ~ /ZMPBA|ZMPIL|ZMPJA|Group/' fang_et_al_genotypes.txt | cut -f 1,4-986 > teosinte_genotypes.txt
@@ -172,22 +174,28 @@ awk -f transpose.awk teosinte_genotypes.txt > transposed_teosinte_genotypes.txt
 heag transposed_teosinte_genotypes.txt | cut -f 1-10 | column -t
 (head -n 1 transposed_teosinte_genotypes.txt && tail -n +2 transposed_teosinte_genotypes.txt | sort -k1,1) > sorted_transposed_teosinte_genotypes.txt
 ```
+
 look at the files:
+
 ```
 head teosinte_genotypes.txt | cut -f 1-10 | column -t
 tail teosinte_genotypes.txt | cut -f 1-10 | column -t
 ```
 
 merged the files like for maize:
+
 ```
 join --header -1 1 -2 1 -t $'\t' sorted_snp_formatted_position.txt sorted_transposed_teosinte_genotypes.txt > joined_teosinte_snp_and_genotypes.txt
 ```
+
 excluded unknown and multiples
+
 ```
 awk '$3 !~ /unknown|multiple/' joined_teosinte_snp_and_genotypes.txt > joined_teosinte_only_numeric_position.txt
 ```
 
 make the folder for teosinte
+
 ```
 mkdir teosinte
 ```
@@ -195,6 +203,7 @@ mkdir teosinte
 
 used a loop again to create the files for each chromosome in increasing order with ?/? for missing values and decreasing order with -/- for missing values
 and also made the files for unkown and multiple position
+
 ```
 for i in {1..10}; do (head -n 1 joined_teosinte_only_numeric_position.txt && awk '$2 == '$i'' joined_teosinte_only_numeric_position.txt | sort -k3,3n) > teosinte/teosinte_chr"$i"_increasing.txt; done
 for i in {1..10}; do (head -n 1 joined_teosinte_only_numeric_position.txt && awk '$2 == '$i'' joined_teosinte_only_numeric_position.txt | sort -k3,3nr | sed 's/?/-/g') > teosinte/teosinte_chr"$i"_decreasing.txt; done
@@ -219,10 +228,12 @@ head teosinte_snp_with_unknown_position.txt | cut -f 1-10 | column -t
 ```
 
 Final check how many files are in the teosinte and maize folders:
+
 ```
 ls -1 teosinte | grep -v / | wc -l
 ls -1 maize | grep -v / | wc -l
 ```
+
 Yay, 22 in each!
 
 
